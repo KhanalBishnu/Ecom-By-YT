@@ -2,7 +2,7 @@
 
      <div class="py-3 py-md-5 bg-light">
          <div class="container">
-             {{-- {{-- @if (session('message'))
+            {{-- {{-- @if (session('message'))
             <div class="text-success ">
                 {{session('message')}}
             </div>
@@ -68,24 +68,23 @@
                      <div class="mt-2">
                          <div class="input-group">
                              <span wire:click="decrementQuantity" class="btn btn1"><i class="fa fa-minus"></i></span>
-                             <input wire:model="quantityCount" readonly type="text"
-                                 value="{{ $this->quantityCount }}" class="input-quantity  " />
+                             <input wire:model="quantityCount" readonly type="text" value="{{$this->quantityCount}}" class="input-quantity  " />
                              <span wire:click="incrementQuantity" class="btn btn1"><i class="fa fa-plus"></i></span>
                          </div>
                      </div>
                      <div class="mt-3">
 
-                         <button type="button" wire:click="addToCart({{ $product->id }})" class="btn btn1">
+                         <button type="button" wire:click="addToCart({{$product->id}})" class="btn btn1">
                              <i class="fa fa-shopping-cart"></i> Add To Cart</button>
 
 
-                         <button type="button" wire:click="addToWishList({{ $product->id }})" class="btn btn1">
-                             <span wire:loading.remove wire:target="addToWishList">
-                                 {{-- for make the wishlist loading in instance by livewire --}}
-                                 <i class="fa fa-heart"></i> Add To Wishlist
-                             </span>
-                             <span wire:loading wire:target="addToWishList">Adding... </span>
-                         </button>
+                         <button type="button" wire:click="addToWishList({{$product->id}})"  class="btn btn1">
+                            <span wire:loading.remove  wire:target="addToWishList">
+                                {{-- for make the wishlist loading in instance by livewire --}}
+                                <i class="fa fa-heart"></i> Add To Wishlist
+                            </span>
+                            <span wire:loading wire:target="addToWishList">Adding...   </span>
+                        </button>
                      </div>
                      <div class="mt-3">
                          <h5 class="mb-0">Small Description</h5>

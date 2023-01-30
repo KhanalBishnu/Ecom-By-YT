@@ -7,7 +7,7 @@ use Livewire\Component;
 
 class CartShow extends Component
 {
-    public $cart;
+    public $cart, $totalPrice=0;
     public function render()
     {
         $this->cart=Cart::where('user_id',auth()->user()->id)->get();

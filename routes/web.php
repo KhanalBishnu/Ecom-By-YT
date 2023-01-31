@@ -4,6 +4,7 @@ use App\Http\Livewire\Admin\Brand;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\Front\CartController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\ColorController;
@@ -39,8 +40,11 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/wishlist',[WishlistController::class,'index']);
     Route::get('/cart',[CartController::class,'index']);
+    Route::get('/checkout',[CheckoutController::class,'index']);
 
 });
+// for thank you page
+Route::get('thankyou', [FrontendController::class, 'thankyou']);
 
 Auth::routes();
 

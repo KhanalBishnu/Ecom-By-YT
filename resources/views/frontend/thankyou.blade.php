@@ -2,6 +2,12 @@
 @section('title','Thank You!')
 @section('content')
 <div class="row">
+    @if (session('message'))
+    <div class=" text-center text-primary">
+        <h3 class="text-center text-success">{{session('message')}}</h3>
+        </div>
+
+    @endif
     <div class="container text-center">
         <h1 class="mt-5">Thank you for your order!</h1>
         {{-- <p>Your order number is #123456</p> --}}

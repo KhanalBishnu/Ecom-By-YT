@@ -24,6 +24,7 @@ class CheckoutShow extends Component
 // for total amount which is user used to cart to buy and load the total price when page reload by passing the variable /
     public function totalproductAmount(){
        $this->cart= Cart::where('user_id',auth()->user()->id)->get();
+       $this->totalproductAmount=0;
        foreach ($this->cart as  $cartItem) {
         $this->totalproductAmount+= $cartItem->quantity*$cartItem->product->selling_price;
        }
@@ -63,6 +64,13 @@ class CheckoutShow extends Component
             'price'=>$cartItem->product->selling_price,
            ]);
         }
+        //for quantity decrement when the order placed successfull in product quantity
+        if($cartItem->product_color_id!=NULL){
+            $cartItem->ProductColor()->where('id',$cartItem->product_color_id)->decrement('quantity',$cartItem->quantity);
+        }
+        else{
+            $cartItem->product()->where('id',$cartItem->product_id)->decrement('quantity',$cartItem->quantity);
+        }
         return $order;
     }
     public function codOrder(){
@@ -71,6 +79,7 @@ class CheckoutShow extends Component
         $codOrder=$this->placeOrder();
         if($codOrder){
             Cart::where('user_id',auth()->user()->id)->delete();
+            session()->flash('message','Order Placed Successfully');//for thank you page to show message
             $this->dispatchBrowserEvent('message',[
                 'text'=>'Order Placed Successfully',
                 'type'=>'success',

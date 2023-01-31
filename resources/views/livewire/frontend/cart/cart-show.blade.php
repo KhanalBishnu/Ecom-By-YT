@@ -115,6 +115,8 @@
 
                 </div>
 
+                @if ($totalPrice !=0)
+
 
                 <div class="col-md-4 mt-3 ml-auto">
                     <div class="shadow-sm bg-white p-2">
@@ -124,6 +126,7 @@
                         <a class="btn btn-warning w-100" href="{{url('checkout')}}">Checkout</a>
                     </div>
                 </div>
+                @endif
 
             </div>
         </div>

@@ -12,6 +12,8 @@ class CheckoutShow extends Component
     public $totalproductAmount=0;
     public $fullname,$email,$phone,$pincode,$address;//form model
     public $payment_mode=NULL,$payment_id=NULL;//for order and order Item
+    //for paypal
+    protected $listeners=['validationForAll','transactionEmit'=>'paidOnlineOrder'];
     public function render()
     {
         $this->fullname=auth()->user()->name;//for sent name of user
@@ -94,6 +96,36 @@ class CheckoutShow extends Component
                 'type'=>'error',
                 'status'=>500
             ]);
+        }
+    }
+    // for paypal checkout
+
+    public function validationForAll(){
+        $this->validate();
+    }
+
+    public function paidOnlineOrder($transactionId){
+        //transactionId= your choice
+        $this->payment_id=$transactionId;
+        $this->payment_mode= 'paid by paypal';
+        $codOrder=$this->placeOrder();
+        if($codOrder){
+            Cart::where('user_id',auth()->user()->id)->delete();
+            session()->flash('message','Order Placed Successfully');//for thank you page to show message
+            $this->dispatchBrowserEvent('message',[
+                'text'=>'Order Placed Successfully',
+                'type'=>'success',
+                'status'=>200
+            ]);
+            return redirect()->to('thankyou');
+        }
+        else{
+            $this->dispatchBrowserEvent('message',[
+                'text'=>'Something went Wrong!',
+                'type'=>'error',
+                'status'=>500
+            ]);
+
         }
     }
 }

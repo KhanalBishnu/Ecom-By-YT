@@ -109,6 +109,7 @@
     <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('assets/js/jquery-3.6.3.min.js') }}"></script>
     @livewireScripts
+    @stack('script')
 </body>
 <script>
     // for notifire to success message

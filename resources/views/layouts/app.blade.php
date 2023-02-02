@@ -25,7 +25,7 @@
     <link href="{{ asset('assets/css/index.css') }}" rel="stylesheet">
 
     <!-- Scripts -->
-    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    {{-- @vite(['resources/sass/app.scss', 'resources/js/app.js']) --}}
 
     <!-- JavaScript -->
     {{-- for notifier for message --}}
@@ -114,9 +114,10 @@
 <script>
     // for notifire to success message
     window.addEventListener('message', event => {
-
+        if(event.detail){
     alertify.set('notifier', 'position', 'top-right');
     alertify.notify(event.detail.text,event.detail.type);
+        }
 });
 </script>
 

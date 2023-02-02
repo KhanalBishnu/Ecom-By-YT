@@ -8,6 +8,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\Front\CartController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\ColorController;
+use App\Http\Controllers\Front\OrderController;
 use App\Http\Controllers\Admin\SliderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\CategoryController;
@@ -41,6 +42,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/wishlist',[WishlistController::class,'index']);
     Route::get('/cart',[CartController::class,'index']);
     Route::get('/checkout',[CheckoutController::class,'index']);
+    Route::get('/order',[OrderController::class,'index']);
+    Route::get('/order/{order_id}',[OrderController::class,'view']);
 
 });
 // for thank you page

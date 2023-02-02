@@ -60,6 +60,7 @@
                                                     @php
                                                         $totalPrice=0;
                                                     @endphp
+                                                    {{-- order many relation to orderItem --}}
                                                     @forelse ($orders->OrderItem as $orderItem)
                                                         <tr>
                                                             <td>{{ $orderItem->id }}</td>

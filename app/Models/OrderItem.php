@@ -24,6 +24,7 @@ class OrderItem extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
+    //for orderItem details use product and product color
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id', 'id');

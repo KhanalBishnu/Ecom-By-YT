@@ -9,9 +9,22 @@ use App\Http\Controllers\Controller;
 
 class OrderController extends Controller
 {
-    public function index(){
-        $today=Carbon::now();
-        $orders=Order::whereDate('created_at',$today)->paginate(10);
+    public function index(Request $request){
+        // $today=Carbon::now();
+        // $orders=Order::whereDate('created_at',$today)->paginate(10);
+
+        // for filter by status and created date
+        $todayDate=Carbon::now()->format('y-m-d');
+        $orders=Order::when($request->date !=NULL,function ($q) use($request){
+            return $q->whereDate('created_at',$request->date);
+        },function ($q) use($todayDate){
+            return $q->whereDate('created_at',$todayDate);
+            // if date rakhera filter gate request ko dekhaune if not then aajako date dekhaune
+        })
+        ->when($request->status !=Null,function($q) use($request){
+            return $q->where('status_message',$request->status);
+            // if request ma status aako xa vane tei anisar dekhaune natra pardaina
+        })->paginate(10);
         return view('admin.order.index',compact('orders'));
     }
 

@@ -8,7 +8,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\Front\CartController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\ColorController;
-use App\Http\Controllers\Front\OrderController;
+use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\SliderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\CategoryController;
@@ -112,7 +112,16 @@ Route::prefix('admin')->middleware(['auth', 'isAdmin'])->group(function () {
 
 
     Route::get('dashboard',[DashboardController::class,'index']);
+
     //Category Route
+
+
+    Route::controller(OrderController::class)->group(function () {
+
+        Route::get('/order', 'index');
+        Route::get('/order/{orderId}', 'show');
+        Route::post('/orders', 'store');
+    });
 
 
 });

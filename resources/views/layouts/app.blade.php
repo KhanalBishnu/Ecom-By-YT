@@ -29,6 +29,11 @@
     <link href="{{ asset('assets/css/owl.carousel.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/css/owl.theme.default.min.css') }}" rel="stylesheet">
 
+    {{-- Exzoom product Image link css  --}}
+    <link href="{{ asset('assets/exzoom/jquery.exzoom.css') }}" rel="stylesheet">
+
+
+
 
     <!-- Scripts -->
     {{-- @vite(['resources/sass/app.scss', 'resources/js/app.js']) --}}
@@ -117,6 +122,10 @@
 
     {{-- owl carousel link js  --}}
     <script src="{{ asset('assets/js/owl.carousel.min.js') }}"></script>
+
+    {{-- Exzoom product image link js  --}}
+
+    <script src="{{ asset('assets/exzoom/jquery.exzoom.js') }}"></script>
 
 
 <script>

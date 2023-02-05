@@ -24,6 +24,12 @@
     <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/css/index.css') }}" rel="stylesheet">
 
+
+    {{-- owl carousel link css  --}}
+    <link href="{{ asset('assets/css/owl.carousel.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/css/owl.theme.default.min.css') }}" rel="stylesheet">
+
+
     <!-- Scripts -->
     {{-- @vite(['resources/sass/app.scss', 'resources/js/app.js']) --}}
 
@@ -108,9 +114,11 @@
     </div>
     <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('assets/js/jquery-3.6.3.min.js') }}"></script>
-    @livewireScripts
-    @stack('script')
-</body>
+
+    {{-- owl carousel link js  --}}
+    <script src="{{ asset('assets/js/owl.carousel.min.js') }}"></script>
+
+
 <script>
     // for notifire to success message
     window.addEventListener('message', event => {
@@ -120,5 +128,9 @@
         }
 });
 </script>
+@yield('script')
+@livewireScripts
+@stack('script')
 
+</body>
 </html>

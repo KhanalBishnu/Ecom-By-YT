@@ -4,6 +4,10 @@
     <div class="row">
         <div class="py-3">
             <div class="col-md-12 grid-margin">
+                @if (session('message'))
+                <div class="alert alert-success md-3">{{session('message')}}</div>
+
+                @endif
                 <div class="card">
                     <div class="card-header">
                         <h3>
@@ -58,7 +62,7 @@
                                                 </thead>
                                                 <tbody>
                                                     @php
-                                                        $totalPrice=0;
+                                                        $totalPrice = 0;
                                                     @endphp
                                                     {{-- order many relation to orderItem --}}
                                                     @forelse ($orders->OrderItem as $orderItem)
@@ -69,13 +73,13 @@
 
                                                             <td>
                                                                 @if ($orderItem->product->ProductImage)
-                                                                <img src="{{ url($orderItem->product->ProductImage[0]->image) }}"
-                                                                    style="width: 50px; height: 50px"
-                                                                    alt=" {{ $orderItem->product->name }}">
-                                                            @else
-                                                                <img src="" style="width: 50px; height: 50px"
-                                                                    alt=" {{ $orderItem->product->name }}">
-                                                            @endif
+                                                                    <img src="{{ url($orderItem->product->ProductImage[0]->image) }}"
+                                                                        style="width: 50px; height: 50px"
+                                                                        alt=" {{ $orderItem->product->name }}">
+                                                                @else
+                                                                    <img src="" style="width: 50px; height: 50px"
+                                                                        alt=" {{ $orderItem->product->name }}">
+                                                                @endif
                                                             </td>
                                                             <td>
                                                                 {{ $orderItem->product->name }}
@@ -85,10 +89,11 @@
                                                             </td>
                                                             <td>{{ $orderItem->price }}</td>
                                                             <td>{{ $orderItem->quantity }}</td>
-                                                            <td class="fw-bold"> ${{$orderItem->price* $orderItem->quantity}}
+                                                            <td class="fw-bold">
+                                                                ${{ $orderItem->price * $orderItem->quantity }}
                                                             </td>
                                                             @php
-                                                                $totalPrice +=$orderItem->price* $orderItem->quantity;
+                                                                $totalPrice += $orderItem->price * $orderItem->quantity;
                                                             @endphp
                                                         </tr>
                                                     @empty
@@ -98,11 +103,49 @@
                                                     @endforelse
                                                     <tr>
                                                         <td colspan="5" class="fw-bold">Total Amount</td>
-                                                        <td colspan="1" class="fw-bold">${{$totalPrice}}</td>
+                                                        <td colspan="1" class="fw-bold">${{ $totalPrice }}</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
 
+                                        </div>
+                                    </div>
+                                    <div class="card-body mt-3">
+                                        <h4>Order Process (Order Status Updates)</h4>
+                                        <hr>
+                                        <div class="row">
+                                            <div class="col-md-5">
+                                                <form action="{{ url('admin/order/' . $orders->id) }}" method="POST">
+                                                    @csrf
+                                                    @method('put')
+                                                    <label for="">Update Your Order Status</label>
+                                                    <div class="input-group">
+                                                        <select name="order_status" id="" class="form-select">
+                                                            <option value="">Select Order Status</option>
+                                                            <option
+                                                                value="in progress"{{ Request::get('status') == 'in progress' ? 'selected' : '' }}>
+                                                                In Progress</option>
+                                                            <option
+                                                                value="completed"{{ Request::get('status') == 'completed' ? 'selected' : '' }}>
+                                                                Completed</option>
+                                                            <option
+                                                                value="pending"{{ Request::get('status') == 'pending' ? 'selected' : '' }}>
+                                                                Pending</option>
+                                                            <option
+                                                                value="cancelled"{{ Request::get('status') == 'cancelled' ? 'selected' : '' }}>
+                                                                Cancelled</option>
+                                                            <option
+                                                                value="out_for_delivery"{{ Request::get('status') == 'out_for_delivery' ? 'selected' : '' }}>
+                                                                Out For Delivery</option>
+                                                        </select>
+                                                        <button type="submit" class="btn btn-primary text-white"> Update</button>
+                                                    </div>
+                                                </form>
+                                                <div class="col-md-15"><br>
+                                                    <hr>
+                                                    <h4 >Current Order Status: <span class="text-uppercase text-success d-inline">{{$orders->status_message}}</span></h4>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

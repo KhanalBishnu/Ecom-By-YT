@@ -120,7 +120,8 @@ Route::prefix('admin')->middleware(['auth', 'isAdmin'])->group(function () {
 
         Route::get('/order', 'index');
         Route::get('/order/{orderId}', 'show');
-        Route::post('/orders', 'store');
+        Route::put('/order/{orderId}', 'updateStatus');
+
     });
 
 

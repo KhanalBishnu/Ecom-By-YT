@@ -98,7 +98,7 @@
                         <a class="nav-link" href="/new_arrival">New Arrivals</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Featured Products</a>
+                        <a class="nav-link" href="featured_product">Featured Products</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Electronics</a>

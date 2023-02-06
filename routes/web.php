@@ -36,6 +36,7 @@ Route::get('/collection',[FrontendController::class,'category']);
 Route::get('/collection/{category_slug}',[FrontendController::class,'product']);
 Route::get('/collection/{category_slug}/{product_slug}',[FrontendController::class,'productView']);
 Route::get('/new_arrival',[FrontendController::class,'newArrival']);
+Route::get('/featured_product',[FrontendController::class,'featuredProduct']);
 // for wishlist
 Route::middleware(['auth'])->group(function () {
 

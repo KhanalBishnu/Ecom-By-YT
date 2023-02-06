@@ -53,4 +53,10 @@ class FrontendController extends Controller
     public function thankyou(){
         return view('frontend.thankyou');
     }
+
+    public function newArrival(){
+        $newArrivalProducts=Product::latest()->take(15)->get();
+        return view('frontend.newArrival.index',compact('newArrivalProducts'));
+
+    }
 }

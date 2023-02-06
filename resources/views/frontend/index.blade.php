@@ -80,7 +80,7 @@
                         <div class="col-md-12 trending-product owl-carousel owl-theme">
 
                             @foreach ($trendingProducts as $productItem)
-                                <div class="col-md-12">
+                                <div class="col-md-6">
                                     <div class="product-card">
 
                                         <div class="product-card-img">

@@ -1,58 +1,220 @@
-<!-- In your Blade file -->
-<div id="comments"></div>
+Sure, here is a summary of the code:
 
-<script>
-    $(document).ready(function() {
-        var postId = 1; // Replace with your post ID
-        $.ajax({
-            type: "GET",
-            url: "/fetch-comments/" + postId,
-            success: function(response) {
-                var comments = response.comments;
-                var commentHtml = '';
-                $.each(comments, function(index, comment) {
-                    commentHtml += '<div class="comment">' +
-                        '<p>' + comment.body + '</p>' +
-                        '<span>By ' + comment.author + '</span>' +
-                        '</div>';
-                });
-                $('#comments').html(commentHtml);
-            }
-        });
-    });
-</script>
+Create a friendships table migration:
+php
+Copy code
+php artisan make:migration create_friendships_table --create=friendships
+Add the following columns to the friendships table migration:
+php
+Copy code
+
+  $table->unsignedBigInteger('sender_id');
+    $table->unsignedBigInteger('receiver_id');
+     $table->enum('status', ['pending', 'accepted'])->default('pending');
+
+    $table->timestamps();
+
+    $table->foreign('sender_id')->references('id')->on('users');
+    $table->foreign('receiver_id')->references('id')->on('users');
+Create a Friendship model:
+php
+Copy code
+php artisan make:model Friendship
+Define the sender, recipient, and status relationships in the Friendship model:
+php
+Copy code
+public function sender()
+{
+    return $this->belongsTo(User::class, 'sender_id');
+}
+
+public function recipient()
+{
+    return $this->belongsTo(User::class, 'recipient_id');
+}
+
+public function getStatusAttribute($value)
+{
+    return $value == 1 ? 'Accepted' : 'Pending';
+}
+Define the users relationship in the User model:
+php
+Copy code
+public function friends()
+{
+    return $this->belongsToMany(User::class, 'friendships', 'sender_id', 'recipient_id')
+                ->wherePivot('status', 1)
+                ->withTimestamps();
+}
+
+public function friendRequests()
+{
+    return $this->belongsToMany(User::class, 'friendships', 'recipient_id', 'sender_id')
+                ->wherePivot('status', 0)
+                ->withTimestamps();
+}
+
+public function friendRequestsSent()
+{
+    return $this->hasMany(Friendship::class, 'sender_id');
+}
+Create a FriendshipController:
+php
+Copy code
+php artisan make:controller FriendshipController
+Define the index, store, accept, and cancel methods in the FriendshipController:
+php
+Copy code
+public function index()
+{
+    $users = User::where('id', '!=', Auth::id())->get();
+
+    return view('users.index', compact('users'));
+}
+
+public function store(User $recipient)
+{
+    $friendship = Friendship::create([
+        'sender_id' => Auth::id(),
+        'recipient_id' => $recipient->id,
+        'status' => 0,
+    ]);
+
+    return redirect()->back()->with('success', 'Friend request sent.');
+}
+
+public function accept(Friendship $friendship)
+{
+    $friendship->update(['status' => 1]);
+
+    return redirect()->back()->with('success', 'Friend request accepted.');
+}
+
+public function cancel(Friendship $friendship)
+{
+    $friendship->delete();
+
+    return redirect()->back()->with('success', 'Friend request cancelled.');
+}
+Create a friendRequests.blade.php view to display incoming friend requests:
+php
+Copy code
+@foreach (Auth::user()->friendRequests as $friendRequest)
+    <div>
+        <p>{{ $friendRequest->sender->name }} has sent you a friend request.</p>
+        <form action="{{ route('friendships.accept', $friendRequest->id) }}" method="POST" style="display: inline;">
+            @csrf
+            @method('PUT')
+            <button type="submit">Accept</button>
+        </form>
+        <form action="{{ route('friendships.cancel', $friendRequest->id) }}" method="POST" style="display: inline;">
+            @csrf
+            @method('DELETE')
+            <button type="submit">Cancel</button>
+        </form>
+    </div>
+@endforeach
+Modify the users.index view to display a "Add Friend" button for
 
 
-<div id="comments" class="collapse">
-    <h3>Comments</h3>
-    @foreach($post->comments as $comment)
-        <p>{{ $comment->body }}</p>
-    @endforeach
-</div>
 
-<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#comments" aria-expanded="false" aria-controls="comments">Comments</button>
 
-or
+User
+continue....
+ChatGPT
+I'm sorry, but I'm not sure which part of the code you want me to continue from. Can you please provide more context or specify which part you want me to continue with?
 
-<!-- Post view -->
-<div class="card">
-    <div class="card-body">
-        <h5 class="card-title">{{ $post->title }}</h5>
-        <p class="card-text">{{ $post->body }}</p>
-        <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#comments" aria-expanded="false" aria-controls="comments">
-            Comments
-        </button>
-        <div id="comments" class="collapse">
-            <h3>Comments</h3>
-            @foreach($post->comments as $comment)
-                <p>{{ $comment->body }}</p>
-            @endforeach
+
+
+
+
+User
+users.index
+ChatGPT
+Sure, here's the continuation of the code from the users.index view:
+
+less
+Copy code
+@extends('layouts.app')
+
+@section('content')
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">All Users</div>
+
+                    <div class="card-body">
+                        @foreach($users as $user)
+                            <div class="row mb-2">
+                                <div class="col-md-4">
+                                    {{ $user->name }}
+                                </div>
+                                <div class="col-md-8">
+                                    @if(!$user->friends()->pluck('id')->contains(Auth::user()->id) && !$user->friendRequests()->pluck('id')->contains(Auth::user()->id))
+                                        <form action="{{ route('add.friend', $user->id) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="btn btn-primary">Send Friend Request</button>
+                                        </form>
+                                    @elseif($user->friendRequests()->pluck('id')->contains(Auth::user()->id))
+                                        <p>Waiting for {{ $user->name }} to accept your request.</p>
+                                    @elseif($user->friends()->pluck('id')->contains(Auth::user()->id))
+                                        <p>You are friends with {{ $user->name }}.</p>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">Your Friends</div>
+
+                    <div class="card-body">
+                        @foreach(Auth::user()->friends() as $friend)
+                            <p>{{ $friend->name }}</p>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</div>
+@endsection
+And here's the continuation of the code from the FriendController:
 
-<!-- Add the necessary CSS and JavaScript files for Bootstrap's collapse component -->
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+php
+Copy code
+use App\User;
+
+class FriendController extends Controller
+{
+    public function addFriend($id)
+    {
+        $user = User::find($id);
+        Auth::user()->addFriend($user);
+
+        return redirect()->back();
+    }
+
+    public function acceptFriend($id)
+    {
+        $user = User::find($id);
+        Auth::user()->acceptFriendRequest($user);
+
+        return redirect()->back();
+    }
+
+    public function cancelFriendRequest($id)
+    {
+        $user = User::find($id);
+        Auth::user()->cancelFriendRequest($user);
+
+        return redirect()->back();
+    }
+}
+I hope this helps! Let me know if you have any questions.
+
+
+
+

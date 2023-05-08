@@ -97,6 +97,20 @@ ABC Organization
 @endcomponent
 
 
+for junction 
+
+
+$product = new Product;
+$product->name = $request->input('name');
+$product->description = $request->input('description');
+$product->price = $request->input('price');
+$product->save();
+
+$categoryIds = $request->input('categories');
+$product->categories()->attach($categoryIds);
+
+
+
 
 
 

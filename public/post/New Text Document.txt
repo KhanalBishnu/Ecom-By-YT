@@ -1,113 +1,163 @@
+for multiple select
+
+$product = Product::findOrFail($id);
+$selectedCategories = $product->categories->pluck('id')->toArray();
+$categories = Category::all();
+
+
+<select name="categories[]" multiple>
+    @foreach ($categories as $category)
+        <option value="{{ $category->id }}" @if (in_array($category->id, $selectedCategories)) selected @endif>{{ $category->name }}</option>
+    @endforeach
+</select>
+
+
+for email configure
+
+ public function index(){
+        $emails_name = Configure::where('lable','test')->first();
+        $emails = json_decode($emails_name->emails);
+        // dd($user);
+
+        return view('configure.index',compact('emails'));
+    }
+
+        public function store(Request $request) {
+            $emails = $request->emails;
+            $validEmails = [];
+
+                foreach ($emails as $email) {
+                    if (!empty($email) && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                        $validEmails[] = $email;
+                    }
+                }
+
+                if (!empty($validEmails)) {
+                    $emailsJson = json_encode($validEmails);
+
+                    Configure::where('lable','test')->delete();
+                    Configure::create([
+                        'lable'=>'test',
+                        'emails'=>$emailsJson
+                    ]);
+                    return redirect()->back();
+                }
+
+        }
+
+blade
+
+@extends('layouts.app')
+@section('content')
+    <div class="container">
+        <div class="row">
+            <div class="col-md-9">
+                <form action="{{ route('configure.store') }}" method="POST">
+                    @csrf
+                    <div class="form-group m-4">
+                        @foreach ($emails as $email)
+                            <div class="input-group mb-3">
+                                <input type="email" name="emails[]" value="{{ $email }}" class="form-control w-75">
+
+                                <div class="input-group-prepend">
+                                    <button class="btn btn-danger remove-email" type="button"><i
+                                            class="fa fa-times"></i></button>
+                                </div>
+                            </div>
+                        @endforeach
+                        <label for="email">Emails:</label>
+                        <div id="email-fields">
+                            <div class="input-group mb-3">
+                                <input type="email" name="emails[]" class="form-control w-75" placeholder="Email">
+                                <div class="input-group-prepend">
+                                    <button class="btn btn-danger remove-email" type="button"><i
+                                            class="fa fa-times"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-success add-email" type="button"><i class="fa fa-plus"></i> Add
+                            Email</button>
+                    </div>
+
+
+                    <button class="btn btn-primary" type="submit">save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function() {
+            // Add email input field
+            $(".add-email").click(function() {
+                var html = '<div class="input-group mb-3">' +
+                    '<input type="email" name="emails[]" class="form-control" placeholder="Email">' +
+                    '<div class="input-group-append">' +
+                    '<button class="btn btn-danger remove-email" type="button"><i class="fa fa-times"></i></button>' +
+                    '</div>' +
+                    '</div>';
+                $("#email-fields").prepend(html);
+
+                // for scroll
+                $('html, body').animate({
+                    scrollTop: $("#email-fields").offset().top
+                }, 500);
+            });
+
+            // Remove email input field
+            $(document).on("click", ".remove-email", function() {
+                $(this).closest(".input-group").remove();
+            });
+        });
+    </script>
+@endsection
+
+
+
+send multiple image in mail
+
 controller
 
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\NewUserNotification;
+// Retrieve the email addresses from the database
+$configure = Configure::where('label', 'test')->first();
 
-// Generate a random password for the new user
-$password = Str::random(10);
-
-// Create the new user with the provided email and random password
-$user = User::create([
-    'email' => 'example@example.com',
-    'password' => Hash::make($password), or bcrypt($password);
-    'name' => 'John Doe',
-]);
-
-// Send an email to the user with their credentials
-Mail::to($user->email)->send(new NewUserNotification($user, $password));
-
-// Display a message to indicate success
-return 'User created successfully!';
-
-
-notify 
-
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
-
-class NewUserNotification extends Notification implements ShouldQueue
-{
-    use Queueable;
-
-    public $user;
-    public $password;
-
-    /**
-     * Create a new notification instance.
-     *
-     * @return void
-     */
-    public function __construct($user, $password)
-    {
-        $this->user = $user;
-        $this->password = $password;
-    }
-
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function via($notifiable)
-    {
-        return ['mail'];
-    }
-
-    /**
-     * Get the mail representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
-     */
-    public function toMail($notifiable)
-    {
-        return (new MailMessage)
-                    ->subject('Welcome to ABC Organization')
-                    ->markdown('emails.new_user', ['user' => $this->user, 'password' => $this->password]);
+if ($configure) {
+    $emails = json_decode($configure->emails);
+    if (is_array($emails)) {
+        // Loop through the email addresses and send the email to each recipient
+        foreach ($emails as $email) {
+            Mail::to($email)->send(new DemoEmail());
+        }
     }
 }
 
+for single image
 
+public function sendEmailWithImage(Post $post)
+{
+    $media = $post->getFirstMedia();
+    
+    $email = new DemoEmail($media);
+
+    Mail::to('example@example.com')->send($email);
+
+    return 'Email sent successfully.';
+}
+
+
+markdown
 @component('mail::message')
-# Welcome to ABC Organization
+# Introduction
 
-Hello {{ $user->name }},
+The first image of this post is attached.
 
-Your account has been created successfully with the following credentials:
-
-- Email: {{ $user->email }}
-- Password: {{ $password }}
-
-To access our services and make complaints, please click the button below to login:
-
-@component('mail::button', ['url' => 'http://yourapp.com/login'])
-Login
+@component('mail::image')
+{{ $media->getPath() }}
 @endcomponent
 
-Thank you for using our services!
-
-Best regards,<br>
-ABC Organization
+Thanks,<br>
+{{ config('app.name') }}
 @endcomponent
 
-
-for junction 
-
-
-$product = new Product;
-$product->name = $request->input('name');
-$product->description = $request->input('description');
-$product->price = $request->input('price');
-$product->save();
-
-$categoryIds = $request->input('categories');
-$product->categories()->attach($categoryIds);
 
 
 

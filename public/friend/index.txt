@@ -1,0 +1,112 @@
+ // sed request
+    public function friends()
+    {
+        return $this->belongsToMany(User::class, 'friend_ships', 'user_id', 'friend_id')
+                    ->withTimestamps();
+    }
+
+
+    // for accept and cancle
+
+    public function friendRequestsReceived()
+{
+    return $this->belongsToMany(User::class, 'friend_ships', 'friend_id', 'user_id')
+                ->withPivot('status')
+                ->wherePivot('status', '=', 'pending');
+}
+
+public function friendRequests()
+{
+    return $this->belongsToMany(User::class, 'friend_ships', 'user_id', 'friend_id')
+                ->withPivot('status')
+                ->wherePivot('status', '=', 'pending');
+}
+
+
+@extends('frontend.post.main')
+@section('content')
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">Friend Requests</div>
+
+                            <div class="row">
+                                @foreach($users as $user)
+                                    <div class="col-md-4">
+                                        <div class="card">
+                                            <img src="{{  url('image/images.jpg') }}" class="card-img-top" alt="{{ $user->name }}">
+                                            <div class="card-body">
+                                                <h5 class="card-title">{{ $user->name }}</h5>
+                                                <p class="card-text">{{ $user->bio }}</p>
+                                                @if(!Auth::user()->friends()->where('friend_id', $user->id)->exists())
+                                                <a href="#" class="btn btn-primary">Add Friend</a>
+                                                @else
+                                                <a href="#" class="btn btn-primary">Cancle Friend</a>
+                                                @endif
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @if(($loop->iteration % 3) == 0)
+                                        </div>
+                                        <div class="row">
+                                    @endif
+                                @endforeach
+                            </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+     {{--<div class="row">
+        <div class="col-md-6">
+          <h3>Friend Requests</h3>
+          @foreach(Auth::user()->friendRequestsReceived as $friendRequest)
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">{{ $friendRequest->sender->name }}</h5>
+                <p class="card-text">{{ $friendRequest->sender->bio }}</p>
+                {{-- <form method="POST" action="{{ route('friendship.accept', ['friendship' => $friendRequest->id]) }}">
+                  @csrf
+                  <button type="submit" class="btn btn-success">Accept</button>
+                </form>
+                {{-- <form method="POST" action="{{ route('friendship.decline', ['friendship' => $friendRequest->id]) }}">
+                  @csrf
+                  <button type="submit" class="btn btn-danger">Decline</button>
+                </form>
+              </div>
+            </div>
+          @endforeach
+        </div>
+        <div class="col-md-6">
+          <h3>Send Friend Request</h3>
+          {{-- <form method="POST" action="{{ route('friendship.store') }}">
+            @csrf
+            <div class="form-group">
+              <label for="recipient">Select User</label>
+              <select class="form-control" id="recipient" name="recipient">
+                @foreach($users as $user)
+                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+
+                @endforeach
+              </select>
+            </div>
+            @if(!Auth::user()->friends()->where('friend_id', $user->id)->exists())
+
+            <button type="submit" class="btn btn-primary">Send Request</button>
+            @else
+            <button type="submit" class="btn btn-primary">Cancle Request</button>
+            @endif
+          </form>
+        </div>
+      </div>
+      --}}
+
+@endsection
+
+
+            $table->unique(['user_id', 'friend_id']);
+
+

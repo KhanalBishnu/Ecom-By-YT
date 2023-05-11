@@ -1,0 +1,23 @@
+ public function friendsShow()
+        {
+            return $this->belongsToMany(User::class, 'friend_ships', 'user_id', 'friend_id')
+                        ->wherePivot('status', 'accepted');
+        }
+
+
+$yourFriends = User::where(function ($query) use ($user) {
+                        $query->whereExists(function ($query) use ($user) {
+                            $query->select(DB::raw(1))
+                                  ->from('friend_ships')
+                                  ->whereRaw('friend_ships.friend_id = users.id')
+                                  ->where('friend_ships.user_id', $user->id)
+                                  ->where('friend_ships.status', 'accepted');
+                        })->orWhereExists(function ($query) use ($user) {
+                            $query->select(DB::raw(1))
+                                  ->from('friend_ships')
+                                  ->whereRaw('friend_ships.user_id = users.id')
+                                  ->where('friend_ships.friend_id', $user->id)
+                                  ->where('friend_ships.status', 'accepted');
+                        });
+                    })->get();
+

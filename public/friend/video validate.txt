@@ -1,0 +1,21 @@
+public function uploadVideos(Request $request)
+{
+    $videos = $request->file('videos');
+    
+    foreach ($videos as $index => $video) {
+        $validator = Validator::make(
+            ['video' => $video],
+            ['video' => 'required|file|max:40000'] // Maximum file size in kilobytes (40MB)
+        );
+        sssss
+        if ($validator->fails()) {
+            $errorMessage = $validator->errors()->first('video');
+            return response()->json(['error' => "Video at index $index: $errorMessage"], 422);
+        }
+        
+        // Handle the video upload logic
+    }
+    
+    // All videos are valid, continue with the upload process
+    // ...
+}

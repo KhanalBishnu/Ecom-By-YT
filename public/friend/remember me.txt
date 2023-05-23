@@ -1,0 +1,28 @@
+<form method="POST" action="{{ route('login') }}">
+    @csrf
+    
+    <!-- Other form fields -->
+    
+    <div>
+        <label for="remember">Remember Me</label>
+        <input type="checkbox" id="remember" name="remember">
+    </div>
+    
+    <button type="submit">Login</button>
+</form>
+
+
+public function login(Request $request)
+{
+    $credentials = $request->only('email', 'password');
+    
+    if (Auth::attempt($credentials, $request->filled('remember'))) {
+        // Authentication successful
+        return redirect()->intended('/dashboard');
+    } else {
+        // Authentication failed
+        return redirect()->back()->withErrors([
+            'email' => 'Invalid credentials',
+        ]);
+    }
+}

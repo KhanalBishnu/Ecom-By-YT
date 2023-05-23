@@ -1,0 +1,59 @@
+<script>
+   $(document).ready(function() {
+       $('form').submit(function(event) {
+           // Prevent the form from submitting by default
+           event.preventDefault();
+           
+           // Get the input field values
+           var name = $('#name').val();
+           var phone = $('#phone').val();
+           var email = $('#email').val();
+           
+           // Perform validation checks
+           var isValid = true;
+           
+           if (name === '') {
+               // Display an error message for name field
+               $('#name-error').text('Please enter your name.');
+               isValid = false;
+           } else {
+               $('#name-error').text('');
+           }
+           
+           if (phone === '') {
+               // Display an error message for phone field
+               $('#phone-error').text('Please enter your phone number.');
+               isValid = false;
+           } else if (isNaN(phone) || phone.length < 10) {
+               // Display an error message if phone number is not a valid number or less than 10 digits
+               $('#phone-error').text('Phone number should be a valid 10-digit number.');
+               isValid = false;
+           } else {
+               $('#phone-error').text('');
+           }
+           
+           if (email === '') {
+               // Display an error message for email field
+               $('#email-error').text('Please enter your email address.');
+               isValid = false;
+           } else if (!isValidEmail(email)) {
+               // Display an error message if email is not in valid format
+               $('#email-error').text('Please enter a valid email address.');
+               isValid = false;
+           } else {
+               $('#email-error').text('');
+           }
+           
+           // Submit the form if all fields are valid
+           if (isValid) {
+               this.submit();
+           }
+       });
+       
+       // Helper function to check if email is in valid format
+       function isValidEmail(email) {
+           var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+           return emailRegex.test(email);
+       }
+   });
+</script>
